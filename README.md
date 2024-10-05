@@ -29,26 +29,26 @@
 
 Пользователь может скачать Cumulative Update Package с [сайта Microsoft](https://catalog.update.microsoft.com) и обновить систему offline. Для автоматзиации этого процесса я воспользуюсь встроенным в Windows инструментом Deployment Image Servicing and Management (DISM.exe). DISM позволяет модифицировать установочный образ, установить драйвера, удалить несипользуемые приложения и "фичи", изменить настройки системы. Но обо всём по порядку.
 
-Для начала скачаем установочный iso с [официального сайта Microsoft](https://www.microsoft.com/software-download/windows11). Если вы откроете эту страницу с компьютера под управлением Windows, то ссылка на iso-файл может не отображаться. В этом случае воспользуйтесь другим устройством или измените User-Agent в браузере. Я буду работать с файлом `Win11_23H2_EnglishInternational_x64v2.iso` (6.33 GB):
+Для начала скачаем установочный iso с [официального сайта Microsoft](https://www.microsoft.com/software-download/windows11). Если вы откроете эту страницу с компьютера под управлением Windows, то ссылка на iso-файл может не отображаться. В этом случае воспользуйтесь другим устройством или измените User-Agent в браузере. Я буду работать с файлом `Win11_24H2_EnglishInternational_x64.iso` (5.7 GB):
 
 ```PowerShell
-Get-ChildItem D:\images\Win11_23H2_EnglishInternational_x64v2.iso | Format-Table -Property Name, Length
+Get-ChildItem D:\images\Win11_24H2_EnglishInternational_x64.iso | Format-Table -Property Name, Length
 Name                                          Length
 ----                                          ------
-Win11_23H2_EnglishInternational_x64v2.iso     6797694976
+Win11_24H2_EnglishInternational_x64.iso 5832091648
 ```
 
 ```PowerShell
-Get-FileHash -algorithm sha256 D:\images\Win11_23H2_EnglishInternational_x64v2.iso | Format-Table -Property Algorithm, Hash
+Get-FileHash -algorithm sha256 D:\images\Win11_24H2_EnglishInternational_x64.iso | Format-Table -Property Algorithm, Hash
 Algorithm Hash
 --------- ----
-SHA256    705AC061688FFD7F5721DA844D01DF85433856EAFAA8441ECE94B270685CA2DB
+SHA256    D5A4C97C3E835C43B1B9A31933327C001766CE314608BA912F2FFFC876044309
 ```
 
 Далее смонтируем iso-образ и скопируем файл `sources\install.wim` в каталог `D:\images\`.
 
 ```PowerShell
-$imagePath = "D:\images\Win11_23H2_EnglishInternational_x64v2.iso"
+$imagePath = "D:\images\Win11_24H2_EnglishInternational_x64.iso"
 
 Mount-DiskImage -ImagePath $imagePath
 
@@ -72,59 +72,57 @@ Details for image : D:\images\install.wim
 Index : 1
 Name : Windows 11 Home
 Description : Windows 11 Home
-Size : 18,571,440,811 bytes
+Size : 18,709,107,315 bytes
 
 Index : 2
 Name : Windows 11 Home N
 Description : Windows 11 Home N
-Size : 17,885,305,053 bytes
+Size : 18,162,298,137 bytes
 
 Index : 3
 Name : Windows 11 Home Single Language
 Description : Windows 11 Home Single Language
-Size : 18,556,240,464 bytes
+Size : 18,688,958,400 bytes
 
 Index : 4
 Name : Windows 11 Education
 Description : Windows 11 Education
-Size : 18,842,731,319 bytes
+Size : 19,213,845,892 bytes
 
 Index : 5
 Name : Windows 11 Education N
 Description : Windows 11 Education N
-Size : 18,189,127,989 bytes
+Size : 18,673,246,054 bytes
 
 Index : 6
 Name : Windows 11 Pro
 Description : Windows 11 Pro
-Size : 18,875,589,179 bytes
+Size : 19,216,462,493 bytes
 
 Index : 7
 Name : Windows 11 Pro N
 Description : Windows 11 Pro N
-Size : 18,191,233,544 bytes
+Size : 18,675,690,173 bytes
 
 Index : 8
 Name : Windows 11 Pro Education
 Description : Windows 11 Pro Education
-Size : 18,842,681,529 bytes
+Size : 19,213,896,530 bytes
 
 Index : 9
 Name : Windows 11 Pro Education N
 Description : Windows 11 Pro Education N
-Size : 18,189,077,299 bytes
+Size : 18,673,271,823 bytes
 
 Index : 10
 Name : Windows 11 Pro for Workstations
 Description : Windows 11 Pro for Workstations
-Size : 18,842,706,424 bytes
+Size : 19,213,947,168 bytes
 
 Index : 11
 Name : Windows 11 Pro N for Workstations
 Description : Windows 11 Pro N for Workstations
-Size : 18,189,102,644 bytes
-
-The operation completed successfully.
+Size : 18,673,297,592 bytes
 ```
 
 Я выберу Windows 11 Pro N. "N" означает "Not with Media Player", эта редакция не включает кодеки и некоторые другие фичи, которыми я в любом случае не пользуюсь. Чтобы посмотреть дополнительную информацию об этой редакции выполним ту же самую команду с параметром `/index:7`:
@@ -140,25 +138,30 @@ Details for image : D:\images\install.wim
 Index : 7
 Name : Windows 11 Pro N
 Description : Windows 11 Pro N
-Size : 18,191,233,544 bytes
+Size : 18,675,690,173 bytes
 WIM Bootable : No
 Architecture : x64
 Hal : <undefined>
-Version : 10.0.22621
-ServicePack Build : 2861
+Version : 10.0.26100
+ServicePack Build : 1742
 ServicePack Level : 0
 Edition : ProfessionalN
 Installation : Client
 ProductType : WinNT
 ProductSuite : Terminal Server
 System Root : WINDOWS
-Directories : 26242
-Files : 108828
-Created : 04/12/2023 - 06:35:26
-Modified : 04/12/2023 - 07:21:16
+Directories : 24762
+Files : 107921
+Created : 06/09/2024 - 04:26:57
+Modified : 06/09/2024 - 05:06:35
 Languages :
         en-GB (Default)
 The operation completed successfully.
+```
+
+Сделаем файл install.wim доступным для записи:
+```PowerShell
+Set-ItemProperty -Path "D:\images\install.wim" -Name IsReadOnly -Value $false
 ```
 
 Далее создадим каталог `D:\images\mnt` и смонтируем в него образ `install.wim`:
@@ -173,19 +176,18 @@ Dism /Mount-Image /ImageFile:"D:\images\install.wim" /index:7 /MountDir:"D:\imag
 ```PowerShell
 Dism /Image:"D:\images\mnt" /Get-Features /English /Format:Table | Select-String -pattern ".+Enabled.*"
 Windows-Defender-Default-Definitions        | Enabled
-Printing-PrintToPDFServices-Features        | Enabled
-MSRDC-Infrastructure                        | Enabled
 MicrosoftWindowsPowerShellV2Root            | Enabled
 MicrosoftWindowsPowerShellV2                | Enabled
+WorkFolders-Client                          | Enabled
 WCF-Services45                              | Enabled
 WCF-TCP-PortSharing45                       | Enabled
-NetFx4-AdvSrvs                              | Enabled
+SmbDirect                                   | Enabled
+Printing-PrintToPDFServices-Features        | Enabled
 SearchEngine-Client-Package                 | Enabled
-Microsoft-RemoteDesktopConnection           | Enabled
-WorkFolders-Client                          | Enabled
 Printing-Foundation-Features                | Enabled
 Printing-Foundation-InternetPrinting-Client | Enabled
-SmbDirect                                   | Enabled
+MSRDC-Infrastructure                        | Enabled
+NetFx4-AdvSrvs                              | Enabled
 ```
 
 #### Удаляем неиспользуемые фичи:
@@ -221,7 +223,6 @@ Language.OCR~~~en-GB~0.0.1.0                                   | Installed
 Language.Speech~~~en-GB~0.0.1.0                                | Installed
 Language.TextToSpeech~~~en-GB~0.0.1.0                          | Installed
 MathRecognizer~~~~0.0.1.0                                      | Installed
-Media.WindowsMediaPlayer~~~~0.0.12.0                           | Installed
 Microsoft.Wallpapers.Extended~~~~0.0.1.0                       | Installed
 Microsoft.Windows.Ethernet.Client.Intel.E1i68x64~~~~0.0.1.0    | Installed
 Microsoft.Windows.Ethernet.Client.Intel.E2f68~~~~0.0.1.0       | Installed
@@ -229,6 +230,7 @@ Microsoft.Windows.Ethernet.Client.Realtek.Rtcx21x64~~~~0.0.1.0 | Installed
 Microsoft.Windows.Ethernet.Client.Vmware.Vmxnet3~~~~0.0.1.0    | Installed
 Microsoft.Windows.Notepad.System~~~~0.0.1.0                    | Installed
 Microsoft.Windows.PowerShell.ISE~~~~0.0.1.0                    | Installed
+Microsoft.Windows.Sense.Client~~~~                             | Installed
 Microsoft.Windows.Wifi.Client.Broadcom.Bcmpciedhd63~~~~0.0.1.0 | Installed
 Microsoft.Windows.Wifi.Client.Broadcom.Bcmwl63al~~~~0.0.1.0    | Installed
 Microsoft.Windows.Wifi.Client.Broadcom.Bcmwl63a~~~~0.0.1.0     | Installed
@@ -248,17 +250,14 @@ Microsoft.Windows.Wifi.Client.Qualcomm.Athw8x~~~~0.0.1.0       | Installed
 Microsoft.Windows.Wifi.Client.Qualcomm.Athwnx~~~~0.0.1.0       | Installed
 Microsoft.Windows.Wifi.Client.Qualcomm.Qcamain10x64~~~~0.0.1.0 | Installed
 Microsoft.Windows.Wifi.Client.Ralink.Netr28x~~~~0.0.1.0        | Installed
-Microsoft.Windows.Wifi.Client.Realtek.Rtl8187se~~~~0.0.1.0     | Installed
 Microsoft.Windows.Wifi.Client.Realtek.Rtl8192se~~~~0.0.1.0     | Installed
-Microsoft.Windows.Wifi.Client.Realtek.Rtl819xp~~~~0.0.1.0      | Installed
-Microsoft.Windows.Wifi.Client.Realtek.Rtl85n64~~~~0.0.1.0      | Installed
 Microsoft.Windows.Wifi.Client.Realtek.Rtwlane01~~~~0.0.1.0     | Installed
 Microsoft.Windows.Wifi.Client.Realtek.Rtwlane13~~~~0.0.1.0     | Installed
 Microsoft.Windows.Wifi.Client.Realtek.Rtwlane~~~~0.0.1.0       | Installed
-Microsoft.Windows.WordPad~~~~0.0.1.0                           | Installed
 OneCoreUAP.OneSync~~~~0.0.1.0                                  | Installed
 OpenSSH.Client~~~~0.0.1.0                                      | Installed
 Print.Management.Console~~~~0.0.1.0                            | Installed
+VBSCRIPT~~~~                                                   | Installed
 Windows.Kernel.LA57~~~~0.0.1.0                                 | Installed
 WMIC~~~~                                                       | Installed
 ```
@@ -313,25 +312,31 @@ Dism /Image:"D:\images\mnt" /Remove-Capability /CapabilityName:Microsoft.Windows
 Dism /Image:"D:\images\mnt" /Remove-Capability /CapabilityName:OneCoreUAP.OneSync~~~~0.0.1.0
 Dism /Image:"D:\images\mnt" /Remove-Capability /CapabilityName:OpenSSH.Client~~~~0.0.1.0
 Dism /Image:"D:\images\mnt" /Remove-Capability /CapabilityName:Print.Management.Console~~~~0.0.1.0
+Dism /Image:"D:\images\mnt" /Remove-Capability /CapabilityName:VBSCRIPT~~~~
 ```
 
 #### Получаем список предустановленных пакетов
 ```PowerShell
 Dism /Image:"D:\images\mnt" /Get-Packages | Select-String -pattern "Package Identity : .+"
-Package Identity : Microsoft-OneCore-DirectX-Database-FOD-Package~31bf3856ad364e35~amd64~~10.0.22621.2428
-Package Identity : Microsoft-Windows-Client-LanguagePack-Package~31bf3856ad364e35~amd64~en-GB~10.0.22621.2428
-Package Identity : Microsoft-Windows-FodMetadata-Package~31bf3856ad364e35~amd64~~10.0.22621.1
-Package Identity : Microsoft-Windows-Foundation-Package~31bf3856ad364e35~amd64~~10.0.22621.1
-Package Identity : Microsoft-Windows-Kernel-LA57-FoD-Package~31bf3856ad364e35~amd64~~10.0.22621.2428
-Package Identity : Microsoft-Windows-LanguageFeatures-Basic-en-gb-Package~31bf3856ad364e35~amd64~~10.0.22621.2428
-Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~amd64~en-GB~10.0.22621.1
-Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~amd64~~10.0.22621.2428
-Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~wow64~en-GB~10.0.22621.1
-Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~wow64~~10.0.22621.1
-Package Identity : Package_for_DotNetRollup_481~31bf3856ad364e35~amd64~~10.0.9186.2
-Package Identity : Package_for_KB5027397~31bf3856ad364e35~amd64~~22621.2355.1.1
-Package Identity : Package_for_RollupFix~31bf3856ad364e35~amd64~~22621.2428.1.8
-Package Identity : Package_for_ServicingStack_2423~31bf3856ad364e35~amd64~~22621.2423.1.1
+Package Identity : Microsoft-Windows-Client-LanguagePack-Package~31bf3856ad364e35~amd64~en-GB~10.0.26100.1742
+Package Identity : Microsoft-Windows-FodMetadata-Package~31bf3856ad364e35~amd64~~10.0.26100.1
+Package Identity : Microsoft-Windows-FodMetadataServicing-Desktop-CompDB-Package~31bf3856ad364e35~amd64~~10.0.26100.1
+Package Identity : Microsoft-Windows-FodMetadataServicing-Desktop-Metadata-Package~31bf3856ad364e35~amd64~~10.0.26100.1742
+Package Identity : Microsoft-Windows-Foundation-Package~31bf3856ad364e35~amd64~~10.0.26100.1
+Package Identity : Microsoft-Windows-Kernel-LA57-FoD-Package~31bf3856ad364e35~amd64~~10.0.26100.1742
+Package Identity : Microsoft-Windows-LanguageFeatures-Basic-en-gb-Package~31bf3856ad364e35~amd64~~10.0.26100.1742
+Package Identity : Microsoft-Windows-Licenses-ProfessionalN-Package~31bf3856ad364e35~amd64~en-GB~10.0.26100.1742
+Package Identity : Microsoft-Windows-Licenses-ProfessionalN-Package~31bf3856ad364e35~amd64~~10.0.26100.1742
+Package Identity : Microsoft-Windows-SenseClient-FoD-Package~31bf3856ad364e35~amd64~en-GB~10.0.26100.1
+Package Identity : Microsoft-Windows-SenseClient-FoD-Package~31bf3856ad364e35~amd64~~10.0.26100.1
+Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~amd64~en-GB~10.0.26100.1742
+Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~amd64~~10.0.26100.1742
+Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~wow64~en-GB~10.0.26100.1
+Package Identity : Microsoft-Windows-WMIC-FoD-Package~31bf3856ad364e35~wow64~~10.0.26100.1742
+Package Identity : OpenSSH-Client-Package~31bf3856ad364e35~amd64~~10.0.26100.1742
+Package Identity : Package_for_DotNetRollup_481~31bf3856ad364e35~amd64~~10.0.9266.1
+Package Identity : Package_for_RollupFix~31bf3856ad364e35~amd64~~26100.1742.1.10
+Package Identity : Package_for_ServicingStack_1738~31bf3856ad364e35~amd64~~26100.1738.1.3
 ```
 
 <!--
@@ -344,100 +349,74 @@ Dism /Image:"D:\images\mnt" /Remove-Package /PackageName:Microsoft-Windows-Langu
 #### Получаем список пакетов, которые устанавливаются автоматически для каждого нового пользователя
 ```PowerShell
 Dism /Image:"D:\images\mnt" /Get-ProvisionedAppxPackages | Select-String -pattern "PackageName : .+"
-PackageName : Clipchamp.Clipchamp_2.2.8.0_neutral_~_yxz26nhyzhsrt
-PackageName : Microsoft.549981C3F5F10_3.2204.14815.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.BingNews_4.2.27001.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.BingWeather_4.53.33420.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.DesktopAppInstaller_2022.310.2333.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.GamingApp_2021.427.138.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.GetHelp_10.2201.421.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.Getstarted_2021.2204.1.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.HEIFImageExtension_1.0.43012.0_x64__8wekyb3d8bbwe
-PackageName : Microsoft.HEVCVideoExtension_1.0.50361.0_x64__8wekyb3d8bbwe
-PackageName : Microsoft.MicrosoftOfficeHub_18.2204.1141.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.MicrosoftSolitaireCollection_4.12.3171.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.MicrosoftStickyNotes_4.2.2.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.Paint_11.2201.22.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.People_2020.901.1724.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.PowerAutomateDesktop_10.0.3735.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.RawImageExtension_2.1.30391.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.ScreenSketch_2022.2201.12.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.SecHealthUI_1000.22621.1.0_x64__8wekyb3d8bbwe
-PackageName : Microsoft.StorePurchaseApp_12008.1001.113.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.Todos_2.54.42772.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.VCLibs.140.00_14.0.30704.0_x64__8wekyb3d8bbwe
-PackageName : Microsoft.VP9VideoExtensions_1.0.50901.0_x64__8wekyb3d8bbwe
-PackageName : Microsoft.WebMediaExtensions_1.0.42192.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WebpImageExtension_1.0.42351.0_x64__8wekyb3d8bbwe
-PackageName : Microsoft.Windows.Photos_21.21030.25003.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsAlarms_2022.2202.24.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsCalculator_2020.2103.8.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsCamera_2022.2201.4.0_neutral_~_8wekyb3d8bbwe
-PackageName : microsoft.windowscommunicationsapps_16005.14326.20544.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsFeedbackHub_2022.106.2230.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsMaps_2022.2202.6.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsNotepad_11.2112.32.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsSoundRecorder_2021.2103.28.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsStore_22204.1400.4.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.WindowsTerminal_3001.12.10983.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.Xbox.TCUI_1.23.28004.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.XboxGameOverlay_1.47.2385.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.XboxGamingOverlay_2.622.3232.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.XboxIdentityProvider_12.50.6001.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.XboxSpeechToTextOverlay_1.17.29001.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.YourPhone_1.22022.147.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.ZuneMusic_11.2202.46.0_neutral_~_8wekyb3d8bbwe
-PackageName : Microsoft.ZuneVideo_2019.22020.10021.0_neutral_~_8wekyb3d8bbwe
-PackageName : MicrosoftCorporationII.QuickAssist_2022.414.1758.0_neutral_~_8wekyb3d8bbwe
-PackageName : MicrosoftWindows.Client.WebExperience_421.20070.195.0_neutral_~_cw5n1h2txyewy
+PackageName : Clipchamp.Clipchamp_3.0.10220.0_neutral_~_yxz26nhyzhsrt
+PackageName : Microsoft.ApplicationCompatibilityEnhancements_1.2401.10.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.BingNews_4.1.24002.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.BingSearch_2022.0.79.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.BingWeather_4.53.52892.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.DesktopAppInstaller_2024.112.2235.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.GetHelp_10.2302.10601.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.MicrosoftOfficeHub_18.2308.1034.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.MicrosoftSolitaireCollection_4.19.3190.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.MicrosoftStickyNotes_4.6.2.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.OutlookForWindows_1.0.0.0_neutral__8wekyb3d8bbwe
+PackageName : Microsoft.Paint_11.2302.20.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.PowerAutomateDesktop_11.2401.28.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.ScreenSketch_2022.2307.52.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.SecHealthUI_1000.26100.1.0_x64__8wekyb3d8bbwe
+PackageName : Microsoft.StorePurchaseApp_22312.1400.6.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.Todos_2.104.62421.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.Windows.Photos_24.24010.29003.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsAlarms_2022.2312.2.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsCalculator_2021.2311.0.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsCamera_2022.2312.3.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsFeedbackHub_2024.125.1522.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsNotepad_11.2312.18.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsStore_22401.1400.6.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.WindowsTerminal_3001.18.10301.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.XboxIdentityProvider_12.110.15002.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.XboxSpeechToTextOverlay_1.97.17002.0_neutral_~_8wekyb3d8bbwe
+PackageName : Microsoft.YourPhone_1.24012.105.0_neutral_~_8wekyb3d8bbwe
+PackageName : MicrosoftCorporationII.QuickAssist_2024.309.159.0_neutral_~_8wekyb3d8bbwe
+PackageName : MicrosoftWindows.Client.WebExperience_424.1301.270.9_neutral_~_cw5n1h2txyewy
+PackageName : MicrosoftWindows.CrossDevice_1.23101.22.0_neutral_~_cw5n1h2txyewy
+PackageName : MSTeams_1.0.0.0_x64__8wekyb3d8bbwe
 ```
 
 #### Удаляем неиспользуемые пакеты
 ```PowerShell
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Clipchamp.Clipchamp_2.2.8.0_neutral_~_yxz26nhyzhsrt
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.549981C3F5F10_3.2204.14815.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingNews_4.2.27001.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingWeather_4.53.33420.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.GamingApp_2021.427.138.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.GetHelp_10.2201.421.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Getstarted_2021.2204.1.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftOfficeHub_18.2204.1141.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftSolitaireCollection_4.12.3171.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftStickyNotes_4.2.2.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Paint_11.2201.22.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.People_2020.901.1724.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.PowerAutomateDesktop_10.0.3735.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ScreenSketch_2022.2201.12.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.StorePurchaseApp_12008.1001.113.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Todos_2.54.42772.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WebMediaExtensions_1.0.42192.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:microsoft.windowscommunicationsapps_16005.14326.20544.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsFeedbackHub_2022.106.2230.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsMaps_2022.2202.6.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsNotepad_11.2112.32.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Xbox.TCUI_1.23.28004.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxGameOverlay_1.47.2385.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxGamingOverlay_2.622.3232.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxIdentityProvider_12.50.6001.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxSpeechToTextOverlay_1.17.29001.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.YourPhone_1.22022.147.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ZuneMusic_11.2202.46.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ZuneVideo_2019.22020.10021.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftCorporationII.QuickAssist_2022.414.1758.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftWindows.Client.WebExperience_421.20070.195.0_neutral_~_cw5n1h2txyewy
-
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.HEIFImageExtension_1.0.43012.0_x64__8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.HEVCVideoExtension_1.0.50361.0_x64__8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.RawImageExtension_2.1.30391.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.VP9VideoExtensions_1.0.50901.0_x64__8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WebpImageExtension_1.0.42351.0_x64__8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Windows.Photos_21.21030.25003.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsAlarms_2022.2202.24.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsCalculator_2020.2103.8.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsCamera_2022.2201.4.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsSoundRecorder_2021.2103.28.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsStore_22204.1400.4.0_neutral_~_8wekyb3d8bbwe
-Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsTerminal_3001.12.10983.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Clipchamp.Clipchamp_3.0.10220.0_neutral_~_yxz26nhyzhsrt
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ApplicationCompatibilityEnhancements_1.2401.10.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingNews_4.1.24002.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingSearch_2022.0.79.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.BingWeather_4.53.52892.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.DesktopAppInstaller_2024.112.2235.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.GetHelp_10.2302.10601.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftOfficeHub_18.2308.1034.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftSolitaireCollection_4.19.3190.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.MicrosoftStickyNotes_4.6.2.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.OutlookForWindows_1.0.0.0_neutral__8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Paint_11.2302.20.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.PowerAutomateDesktop_11.2401.28.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.ScreenSketch_2022.2307.52.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.SecHealthUI_1000.26100.1.0_x64__8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.StorePurchaseApp_22312.1400.6.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Todos_2.104.62421.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.Windows.Photos_24.24010.29003.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsAlarms_2022.2312.2.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsCalculator_2021.2311.0.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsCamera_2022.2312.3.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsFeedbackHub_2024.125.1522.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsNotepad_11.2312.18.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsStore_22401.1400.6.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.WindowsTerminal_3001.18.10301.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxIdentityProvider_12.110.15002.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.XboxSpeechToTextOverlay_1.97.17002.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsoft.YourPhone_1.24012.105.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftCorporationII.QuickAssist_2024.309.159.0_neutral_~_8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftWindows.Client.WebExperience_424.1301.270.9_neutral_~_cw5n1h2txyewy
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftWindows.CrossDevice_1.23101.22.0_neutral_~_cw5n1h2txyewy
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MSTeams_1.0.0.0_x64__8wekyb3d8bbwe
 ```
 
 #### Добавляем фичи
@@ -1115,12 +1094,12 @@ Copy-Item "D:\scripts\" "D:\images\mnt\ScheduledScripts\" -Recurse
 Для устройств Surface Microsoft публикует драйвера в виде MSI-файла. Например, [драйвера Surface Pro 7](https://www.microsoft.com/en-us/download/details.aspx?id=100419). Распакуем msi-файл:
 
 ```PowerShell
-msiexec /a D:\drivers\SurfacePro7_Win11_22621_24.062.28777.0.msi TargetDir=D:\drivers\SurfacePro7_Win11_22621_24.062.28777.0 /qn
+msiexec /a D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0.msi TargetDir=D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0 /qn
 ```
 
 Добавляем распакованные драйвера в образ:
 ```PowerShell
-Dism /Image:"D:\images\mnt" /Add-Driver /Driver:"D:\drivers\SurfacePro7_Win11_22621_24.062.28777.0\SurfaceUpdate" /Recurse
+Dism /Image:"D:\images\mnt" /Add-Driver /Driver:"D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0\SurfaceUpdate" /Recurse
 ```
 
 #### Оптимизация размера образа
@@ -1131,24 +1110,24 @@ Dism /Image:"D:\images\mnt" /Cleanup-Image /AnalyzeComponentStore
 Deployment Image Servicing and Management tool
 Version: 10.0.22621.2792
 
-Image Version: 10.0.22631.2861
+Image Version: 10.0.26100.1742
 
-[===========================99.3%========================= ]
+[==========================100.0%==========================]
 
 Component Store (WinSxS) information:
 
-Windows Explorer Reported Size of Component Store : 7.01 GB
+Windows Explorer Reported Size of Component Store : 6.91 GB
 
-Actual Size of Component Store : 6.99 GB
+Actual Size of Component Store : 6.88 GB
 
-    Shared with Windows : 5.53 GB
-    Backups and Disabled Features : 1.45 GB
+    Shared with Windows : 5.95 GB
+    Backups and Disabled Features : 926.03 MB
     Cache and Temporary Data :  0 bytes
 
-Date of Last Cleanup : 2023-12-04 06:31:43
+Date of Last Cleanup : 2024-09-06 04:22:33
 
 Number of Reclaimable Packages : 0
-Component Store Cleanup Recommended : Yes
+Component Store Cleanup Recommended : No
 
 The operation completed successfully.
 ```
@@ -1156,6 +1135,14 @@ The operation completed successfully.
 Выполним очистку образа:
 ```PowerShell
 Dism /Image:"D:\images\mnt" /Cleanup-Image /StartComponentCleanup /ResetBase
+
+Deployment Image Servicing and Management tool
+Version: 10.0.22621.2792
+
+Image Version: 10.0.26100.1742
+
+[==========================100.0%==========================]
+The operation completed successfully.
 ```
 
 Итоговый размер образа:
@@ -1165,21 +1152,21 @@ Dism /Image:"D:\images\mnt" /Cleanup-Image /AnalyzeComponentStore
 Deployment Image Servicing and Management tool
 Version: 10.0.22621.2792
 
-Image Version: 10.0.22631.2861
+Image Version: 10.0.26100.1742
 
-[===========================99.3%========================= ]
+[==========================100.0%==========================]
 
 Component Store (WinSxS) information:
 
-Windows Explorer Reported Size of Component Store : 7.17 GB
+Windows Explorer Reported Size of Component Store : 6.97 GB
 
-Actual Size of Component Store : 7.14 GB
+Actual Size of Component Store : 6.95 GB
 
-    Shared with Windows : 5.69 GB
-    Backups and Disabled Features : 1.44 GB
+    Shared with Windows : 6.03 GB
+    Backups and Disabled Features : 916.90 MB
     Cache and Temporary Data :  0 bytes
 
-Date of Last Cleanup : 2024-04-29 15:40:26
+Date of Last Cleanup : 2024-10-05 14:50:17
 
 Number of Reclaimable Packages : 0
 Component Store Cleanup Recommended : No
@@ -1198,8 +1185,8 @@ Windows поддерживает загрузку с виртуальных ди
 Создадим виртуальный диск фиксированного размера 15 ГБ:
 
 ```PowerShell
-New-VHD -Path "D:\images\win11pro23h2x64.vhdx" -SizeBytes 15GB -Fixed
-$vhd = Mount-VHD -Path "D:\images\win11pro23h2x64.vhdx" -Passthru
+New-VHD -Path "D:\images\win11pro24h2x64.vhdx" -SizeBytes 15GB -Fixed
+$vhd = Mount-VHD -Path "D:\images\win11pro24h2x64.vhdx" -Passthru
 Initialize-Disk -Number $vhd.Number -PartitionStyle GPT
 New-Partition -DiskNumber $vhd.Number -UseMaximumSize -DriveLetter V
 Format-Volume -DriveLetter V -FileSystem NTFS -NewFileSystemLabel "VHDX" -Confirm:$true
@@ -1212,19 +1199,19 @@ Dism /Apply-Image /ImageFile:"D:\images\install.wim" /index:7 /ApplyDir:V:\ /com
 
 Базовый образ системы готов. Извлечём его:
 ```PowerShell
-Dismount-VHD -Path "D:\images\win11pro23h2x64.vhdx"
+Dismount-VHD -Path "D:\images\win11pro24h2x64.vhdx"
 ```
 
 Сделаем файлы install.wim и базовый VHDX доступными только на чтение:
 ```PowerShell
 Set-ItemProperty -Path "D:\images\install.wim" -Name IsReadOnly -Value $true
-Set-ItemProperty -Path "D:\images\win11pro23h2x64.vhdx" -Name IsReadOnly -Value $true
+Set-ItemProperty -Path "D:\images\win11pro24h2x64.vhdx" -Name IsReadOnly -Value $true
 ```
 
 ### Создание дочернего образа
 
 ```PowerShell
-New-VHD -ParentPath "D:\images\win11pro23h2x64.vhdx" -Path "D:\images\win11pro23h2x64-A.vhdx" -Differencing
+New-VHD -ParentPath "D:\images\win11pro24h2x64.vhdx" -Path "D:\images\win11pro24h2x64-A.vhdx" -Differencing
 ```
 
 #### Обновление баз антивируса MS Defender [<sup>[документация]</sup>](https://support.microsoft.com/en-us/topic/microsoft-defender-update-for-windows-operating-system-installation-images-1c89630b-61ff-00a1-04e2-2d1f3865450d)
@@ -1236,16 +1223,16 @@ Expand-Archive "D:\updates\defender-update-kit-x64.zip" -DestinationPath "D:\upd
 Применим обновления к образу системы:
 ```PowerShell
 Set-ExecutionPolicy Unrestricted -Force
-D:\updates\defender-update-kit-x64\DefenderUpdateWinImage.ps1 -WorkingDirectory "D:\updates\defender-update-kit-x64\tmp" -ImageIndex 1 -Action AddUpdate -ImagePath "D:\images\win11pro23h2x64-A.vhdx" -Package "D:\updates\defender-update-kit-x64\defender-dism-x64.cab"
+D:\updates\defender-update-kit-x64\DefenderUpdateWinImage.ps1 -WorkingDirectory "D:\updates\defender-update-kit-x64\tmp" -ImageIndex 1 -Action AddUpdate -ImagePath "D:\images\win11pro24h2x64-A.vhdx" -Package "D:\updates\defender-update-kit-x64\defender-dism-x64.cab"
 Set-ExecutionPolicy Restricted -Force
 ```
 
 #### Установка обновлений Windows
 ```PowerShell
-Mount-VHD -Path "D:\images\win11pro23h2x64-A.vhdx"
+Mount-VHD -Path "D:\images\win11pro24h2x64-A.vhdx"
 ```
 
-Перейдём в [Microsoft Update Catalog](https://www.catalog.update.microsoft.com/Search.aspx?q=Cumulative+Update+for+Windows+11+Version+23H2+for+x64) и скачаем обновления для Windows и .NET Framework. Для установки обновлений выполним следующую команду:
+Перейдём в [Microsoft Update Catalog](https://www.catalog.update.microsoft.com/Search.aspx?q=Cumulative+Update+for+Windows+11+Version+24H2+for+x64) и скачаем обновления для Windows и .NET Framework. Для установки обновлений выполним следующую команду:
 
 ```PowerShell
 Dism /Image:"V:\" /Add-Package /PackagePath:"D:\updates\windows11.0-kb5039895-x64-ndp481_8b8d33530a05e1423c96f91e14d2780ecb7a54cb.msu"
@@ -1264,7 +1251,7 @@ if ($efiPartition) {
 }
 ```
 
-Добавим в BCD загрузку из `D:\images\win11pro23h2x64-A.vhdx`. Команда `bcdboot` выполнена без параметра `/d`, поэтому новая запись будет загрузочной по умолчанию:
+Добавим в BCD загрузку из `D:\images\win11pro24h2x64-A.vhdx`. Команда `bcdboot` выполнена без параметра `/d`, поэтому новая запись будет загрузочной по умолчанию:
 ```PowerShell
 cd v:\windows\system32
 bcdboot v:\windows /s S: /f UEFI
@@ -1272,12 +1259,12 @@ bcdboot v:\windows /s S: /f UEFI
 
 Добавим в BCD ещё одну запись, которая будет соответствовать образу `-B.vhdx`
 ```PowerShell
-Dismount-VHD -Path "D:\images\win11pro23h2x64-A.vhdx"
-New-VHD -ParentPath "D:\images\win11pro23h2x64.vhdx" -Path "D:\images\win11pro23h2x64-B.vhdx" -Differencing
-Mount-VHD -Path "D:\images\win11pro23h2x64-B.vhdx"
+Dismount-VHD -Path "D:\images\win11pro24h2x64-A.vhdx"
+New-VHD -ParentPath "D:\images\win11pro24h2x64.vhdx" -Path "D:\images\win11pro24h2x64-B.vhdx" -Differencing
+Mount-VHD -Path "D:\images\win11pro24h2x64-B.vhdx"
 cd v:\windows\system32
 bcdboot v:\windows /s S: /f UEFI /d
-Dismount-VHD -Path "D:\images\win11pro23h2x64-B.vhdx"
+Dismount-VHD -Path "D:\images\win11pro24h2x64-B.vhdx"
 ```
 
-Установка системы завершена! Теперь во время следующего старта система автоматически загрузится из образа `D:\images\win11pro23h2x64-A.vhdx`.
+Установка системы завершена! Теперь во время следующего старта система автоматически загрузится из образа `D:\images\win11pro24h2x64-A.vhdx`.
