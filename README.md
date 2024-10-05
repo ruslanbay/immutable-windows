@@ -1235,8 +1235,9 @@ Mount-VHD -Path "D:\images\win11pro24h2x64-A.vhdx"
 Перейдём в [Microsoft Update Catalog](https://www.catalog.update.microsoft.com/Search.aspx?q=Cumulative+Update+for+Windows+11+Version+24H2+for+x64) и скачаем обновления для Windows и .NET Framework. Для установки обновлений выполним следующую команду:
 
 ```PowerShell
-Dism /Image:"V:\" /Add-Package /PackagePath:"D:\updates\windows11.0-kb5039895-x64-ndp481_8b8d33530a05e1423c96f91e14d2780ecb7a54cb.msu"
-Dism /Image:"V:\" /Add-Package /PackagePath:"D:\updates\windows11.0-kb5040442-x64_c1ba0e4607fd0ee46254a625c55438ffb70edcd0.msu"
+Dism /Image:"V:\" /Add-Package /PackagePath:"D:\updates\windows11.0-kb5042098-x64-ndp481_75fb29d8a82fde2199171290b83253841d9e16f2.msu"
+Dism /Image:"V:\" /Add-Package /PackagePath:"D:\updates\windows11.0-kb5043080-x64_953449672073f8fb99badb4cc6d5d7849b9c83e8.msu"
+Dism /Image:"V:\" /Add-Package /PackagePath:"D:\updates\windows11.0-kb5043178-x64_2db945d13d188131efd2f449454dc368dd77c209.msu"
 ```
 
 #### Добавление загрузочной записи
