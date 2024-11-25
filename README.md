@@ -1068,7 +1068,7 @@ Copy-Item "D:\scripts\" "D:\images\mnt\ScheduledScripts\" -Recurse
                     <Order>7</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -command "Start-Process -FilePath 'C:\Program Files (x86)\Microsoft\EdgeWebView\Application\100.0.1185.36\Installer\setup.exe' -ArgumentList '--uninstall --msedgewebview --system-level --verbose-logging --force-uninstall'"</CommandLine>
+                    <CommandLine>powershell -command "Start-Process -FilePath 'C:\Program Files (x86)\Microsoft\EdgeWebView\Application\122.0.2365.106\Installer\setup.exe' -ArgumentList '--uninstall --msedgewebview --system-level --verbose-logging --force-uninstall'"</CommandLine>
                     <Description>Uninstall EdgeWebView</Description>
                     <Order>8</Order>
                 </SynchronousCommand>
