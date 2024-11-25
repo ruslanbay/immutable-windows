@@ -1096,12 +1096,12 @@ Copy-Item "D:\scripts\" "D:\images\mnt\ScheduledScripts\" -Recurse
 Для устройств Surface Microsoft публикует драйвера в виде MSI-файла. Например, [драйвера Surface Pro 7](https://www.microsoft.com/en-us/download/details.aspx?id=100419). Распакуем msi-файл:
 
 ```PowerShell
-msiexec /a D:\drivers\SurfacePro7_Win11_22621_24.093.37527.0msi TargetDir=D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0 /qn
+msiexec /a D:\drivers\SurfacePro7_Win11_22621_24.093.37527.0.msi TargetDir=D:\drivers\SurfacePro7_Win11_22621_24.093.37527.0 /qn
 ```
 
 Добавляем распакованные драйвера в образ:
 ```PowerShell
-Dism /Image:"D:\images\mnt" /Add-Driver /Driver:"D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0\SurfaceUpdate" /Recurse
+Dism /Image:"D:\images\mnt" /Add-Driver /Driver:"D:\drivers\SurfacePro7_Win11_22621_24.093.37527.0\SurfaceUpdate" /Recurse
 ```
 
 #### Оптимизация размера образа
