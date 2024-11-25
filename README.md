@@ -377,6 +377,7 @@ PackageName : Microsoft.WindowsTerminal_3001.18.10301.0_neutral_~_8wekyb3d8bbwe
 PackageName : Microsoft.XboxIdentityProvider_12.110.15002.0_neutral_~_8wekyb3d8bbwe
 PackageName : Microsoft.XboxSpeechToTextOverlay_1.97.17002.0_neutral_~_8wekyb3d8bbwe
 PackageName : Microsoft.YourPhone_1.24012.105.0_neutral_~_8wekyb3d8bbwe
+PackageName : MicrosoftCorporationII.MicrosoftFamily_0.1.28.0_neutral_~_8wekyb3d8bbwe
 PackageName : MicrosoftCorporationII.QuickAssist_2024.309.159.0_neutral_~_8wekyb3d8bbwe
 PackageName : MicrosoftWindows.Client.WebExperience_424.1301.270.9_neutral_~_cw5n1h2txyewy
 PackageName : MicrosoftWindows.CrossDevice_1.23101.22.0_neutral_~_cw5n1h2txyewy
@@ -417,6 +418,7 @@ Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:Microsof
 Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftWindows.Client.WebExperience_424.1301.270.9_neutral_~_cw5n1h2txyewy
 Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftWindows.CrossDevice_1.23101.22.0_neutral_~_cw5n1h2txyewy
 Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MSTeams_1.0.0.0_x64__8wekyb3d8bbwe
+Dism /Image:"D:\images\mnt" /Remove-ProvisionedAppxPackage /PackageName:MicrosoftCorporationII.MicrosoftFamily_0.1.28.0_neutral_~_8wekyb3d8bbwe
 ```
 
 #### Добавляем фичи
@@ -1094,7 +1096,7 @@ Copy-Item "D:\scripts\" "D:\images\mnt\ScheduledScripts\" -Recurse
 Для устройств Surface Microsoft публикует драйвера в виде MSI-файла. Например, [драйвера Surface Pro 7](https://www.microsoft.com/en-us/download/details.aspx?id=100419). Распакуем msi-файл:
 
 ```PowerShell
-msiexec /a D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0.msi TargetDir=D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0 /qn
+msiexec /a D:\drivers\SurfacePro7_Win11_22621_24.093.37527.0msi TargetDir=D:\drivers\SurfacePro7_Win11_22621_24.092.18533.0 /qn
 ```
 
 Добавляем распакованные драйвера в образ:
